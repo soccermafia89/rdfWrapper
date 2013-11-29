@@ -10,23 +10,18 @@ import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class NodeCombiner {
-
-	private static Resource node = LinuxFilesystemWrapper.nodeResource();
-	private static Property rdfType = ModelFactory.createDefaultModel().createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-	private static Property hasPath = LinuxFilesystemWrapper.hasPathProperty();
-	private static Property sameAs = ModelFactory.createDefaultModel().createProperty("http://www.w3.org/2002/07/owl#sameAs");
+	
 
 	public static Model linkNodes(Model metaData, Model newMetaData, HashMap<AnonId, Object> data, HashMap<AnonId, Object> newData) {
 		Model linkedMetadata = ModelFactory.createDefaultModel();
-
 		Reasoner reasoner = PelletReasonerFactory.theInstance().create();
 
 		//Create a map (URI data key -> unique identified resource)
@@ -35,12 +30,12 @@ public class NodeCombiner {
 		HashMap<String, Resource> oldSet = new HashMap<String, Resource>();
 
 		//Create a reverse map for the old set of metadata.
-		StmtIterator stmtIt = oldInf.listStatements((Resource) null, rdfType, node);
+		StmtIterator stmtIt = oldInf.listStatements((Resource) null, RDF.type, LinuxFilesystemWrapper.node);
 		while (stmtIt.hasNext()) {
 			Statement stmt = stmtIt.nextStatement();
 
 			Resource nextNode = stmt.getSubject();
-			Resource nodePath = nextNode.getPropertyResourceValue(hasPath);
+			Resource nodePath = nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 
 			String newPath = (String) newData.get(nodePath.getId());
 			oldSet.put(newPath, nextNode);
@@ -49,12 +44,12 @@ public class NodeCombiner {
 		InfModel newInf = ModelFactory.createInfModel(reasoner, newMetaData);
 
 		//Iterate across new set of metadata
-		stmtIt = newInf.listStatements((Resource) null, rdfType, node);
+		stmtIt = newInf.listStatements((Resource) null, RDF.type, LinuxFilesystemWrapper.node);
 		while (stmtIt.hasNext()) {
 			Statement stmt = stmtIt.nextStatement();
 
 			Resource nextNode = stmt.getSubject();
-			Resource nodePath = nextNode.getPropertyResourceValue(hasPath);
+			Resource nodePath = nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 
 			String newPath = (String) newData.get(nodePath.getId());
 			
@@ -90,29 +85,29 @@ public class NodeCombiner {
 		model.add(node1, OWL.sameAs, node2);
 		
 		//Mark filenames as equal.
-		Resource filename1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasFilenameProperty());
-		Resource filename2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasFilenameProperty());
+		Resource filename1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasFilename);
+		Resource filename2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasFilename);
 		if(filename1 != null && filename2 != null) {
 			model.add(filename1, OWL.sameAs, filename2);
 		}
 		
 		//Mark content as equal.
-		Resource content1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasContentProperty());
-		Resource content2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasContentProperty());
+		Resource content1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasContent);
+		Resource content2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasContent);
 		if(content1 != null && content2 != null) {
 			model.add(content1, OWL.sameAs, content2);
 		}
 		
 		//Mark path as equal.
-		Resource path1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasPathProperty());
-		Resource path2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasPathProperty());
+		Resource path1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
+		Resource path2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 		if(path1 != null && path2 != null) {
 			model.add(path1, OWL.sameAs, path2);
 		}
 		
 		//Mark parent directory as equal.
-		Resource parentDirectory1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasParentDirectoryProperty());
-		Resource parentDirectory2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasParentDirectoryProperty());
+		Resource parentDirectory1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasParentDirectory);
+		Resource parentDirectory2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasParentDirectory);
 		if(parentDirectory1 != null && parentDirectory2 != null) {
 			model.add(parentDirectory1, OWL.sameAs, parentDirectory2);
 		}

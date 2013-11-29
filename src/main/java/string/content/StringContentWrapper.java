@@ -4,106 +4,62 @@ import java.io.InputStream;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Property;
+
 
 public class StringContentWrapper {
-	
+
+	protected static final String uri = "http://ethier.alex.com/StringContent#";
+
+	/**
+	 * returns the URI for this schema
+	 * 
+	 * @return the URI for this schema
+	 */
+	public static String getURI()
+	{
+		return uri;
+	}
+
+	protected static final Resource resource(String local)
+	{
+		return ResourceFactory.createResource(uri + local);
+	}
+
+	protected static final Property property(String local)
+	{
+		return ResourceFactory.createProperty(uri, local);
+	}
+
 	//Resources defined by properties
-	private static Resource character;
-	private static Resource content;
-	private static Resource line;
-	private static Resource phrase;
-	private static Resource word;
-	
-	private static Property hasCharacter;
-	private static Property hasContent;
-	private static Property hasContentOffset;
-	private static Property hasLine;
-	private static Property hasLineOffset;
-	private static Property hasPhrase;
-	private static Property hasSource;
-	private static Property hasWord;
-	private static Property hasWordOffset;
-	
-	static {
+	public static final Resource character = resource("character");
+	public static final Resource content = resource("content");
+	public static final Resource line = resource("line");
+	public static final Resource phrase = resource("phrase");
+	public static final Resource word = resource("word");
+
+	public static final Property hasCharacter = property("hasCharacter");
+	public static final Property hasContent = property("hasContent");
+	public static final Property hasContentOffset = property("hasContentOffset");
+	public static final Property hasLine = property("hasLine");
+	public static final Property hasLineOffset = property("hasLineOffset");
+	public static final Property hasPhrase = property("hasPhrase");
+	public static final Property hasSource = property("hasSource");
+	public static final Property hasWord = property("hasWord");
+	public static final Property hasWordOffset = property("hasWordOffset");
+
+	//Ontology Relationships
+	public static final Model model = getModel();
+
+	protected static Model getModel() {
+		Model model = ModelFactory.createDefaultModel();
 		InputStream inputStream = ClassLoader.getSystemResourceAsStream("StringContent.owl");
 
-		Model model = ModelFactory.createDefaultModel();
+		model = ModelFactory.createDefaultModel();
 		model.read(inputStream, null, "RDF/XML");
-		
-		String prefix = "http://ethier.alex.com/StringContent#";
-		
-		character = model.getResource(prefix + "character");
-		content = model.getResource(prefix + "content");
-		line = model.getResource(prefix + "line");
-		phrase = model.getResource(prefix + "phrase");
-		word = model.getResource(prefix + "word");
-		
-		hasCharacter = model.getProperty(prefix + "hasCharacter");
-		hasContent = model.getProperty(prefix + "hasContent");
-		hasContentOffset = model.getProperty(prefix + "hasContentOffset");
-		hasLine = model.getProperty(prefix + "hasLine");
-		hasLineOffset = model.getProperty(prefix + "hasLineOffset");
-		hasPhrase = model.getProperty(prefix + "hasPhrase");
-		hasSource = model.getProperty(prefix + "hasSource");
-		hasWord = model.getProperty(prefix + "hasWord");
-		hasWordOffset = model.getProperty(prefix + "hasWordOffset");
-	}
 
-	public static Resource characterResource() {
-		return character;
-	}
-
-	public static Resource contentResource() {
-		return content;
-	}
-
-	public static Resource lineResource() {
-		return line;
-	}
-
-	public static Resource phraseResource() {
-		return phrase;
-	}
-
-	public static Resource wordResource() {
-		return word;
-	}
-
-	public static Property hasCharacterProperty() {
-		return hasCharacter;
-	}
-
-	public static Property hasContentResource() {
-		return hasContent;
-	}
-
-	public static Property hasContentOffsetProperty() {
-		return hasContentOffset;
-	}
-
-	public static Property hasLineProperty() {
-		return hasLine;
-	}
-
-	public static Property hasLineOffsetProperty() {
-		return hasLineOffset;
-	}
-
-	public static Property hasPhraseProperty() {
-		return hasPhrase;
-	}
-
-	public static Property hasSourceProperty() {
-		return hasSource;
-	}
-
-	public static Property hasWordProperty() {
-		return hasWord;
-	}
-
-	public static Property hasWordOffsetProperty() {
-		return hasWordOffset;
+		return model;
 	}
 }

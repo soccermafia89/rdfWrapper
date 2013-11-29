@@ -1,14 +1,11 @@
 package ethier.alex;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.commons.io.FileUtils;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 import rdf.serializer.DataModel;
@@ -19,7 +16,6 @@ import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -153,13 +149,7 @@ public class AppTest
 			Model metaData = ModelFactory.createDefaultModel();
 			
 			//Load LinuxFilesystem Model
-			metaData.add(LinuxFilesystemWrapper.getModel());
-			
-			Resource node = LinuxFilesystemWrapper.nodeResource();
-			Resource filename = LinuxFilesystemWrapper.filenameResource();
-			Property hasFilename = LinuxFilesystemWrapper.hasFilenameProperty();
-			Resource path = LinuxFilesystemWrapper.pathResource();
-			Property hasPath = LinuxFilesystemWrapper.hasPathProperty();
+			metaData.add(LinuxFilesystemWrapper.model);
 			
 			
 			HashMap<AnonId, Object> data = new HashMap<AnonId, Object>();
@@ -182,17 +172,17 @@ public class AppTest
 
 				//Generate a unique resource representing each file found.
 				//Resource newNode = filesMetadata.createResource(nodeType);
-				Resource newNode = metaData.createResource(node);
+				Resource newNode = metaData.createResource(LinuxFilesystemWrapper.node);
 
 				//Append data about the file's name
-				Resource nodeFilename = metaData.createResource(filename);
-				metaData.add(newNode, hasFilename, nodeFilename);
+				Resource nodeFilename = metaData.createResource(LinuxFilesystemWrapper.filename);
+				metaData.add(newNode, LinuxFilesystemWrapper.hasFilename, nodeFilename);
 				data.put(nodeFilename.getId(), line);
 				
 				//Append data about file's path
 				String nodePathString = pathString + "/" + line;
-				Resource nodePath = metaData.createResource(path);
-				metaData.add(newNode, hasPath, nodePath);
+				Resource nodePath = metaData.createResource(LinuxFilesystemWrapper.path);
+				metaData.add(newNode, LinuxFilesystemWrapper.hasPath, nodePath);
 				data.put(nodePath.getId(), nodePathString);
 			}
 			
@@ -202,11 +192,11 @@ public class AppTest
 			
 			ArrayList<Resource> nodes = new ArrayList<Resource>();
 			
-			StmtIterator it = metaData.listStatements((Resource) null, RDF.type, node);
+			StmtIterator it = metaData.listStatements((Resource) null, RDF.type, LinuxFilesystemWrapper.node);
 			while(it.hasNext()) {
 				Statement statement = it.nextStatement();
 				Resource nextNode = statement.getSubject().asResource();
-				Resource nodeFilename = nextNode.getPropertyResourceValue(hasFilename);
+				Resource nodeFilename = nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasFilename);
 				String filenameString = (String) data.get(nodeFilename.getId());
 				System.out.println(filenameString);
 				nodes.add(nextNode);

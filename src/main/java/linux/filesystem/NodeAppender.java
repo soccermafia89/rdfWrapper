@@ -23,17 +23,6 @@ import string.content.StringContentWrapper;
 
 public class NodeAppender {
 
-	private static Property hasPath = LinuxFilesystemWrapper.hasPathProperty();
-	private static Resource node = LinuxFilesystemWrapper.nodeResource();
-	private static Property hasParentDirectory = LinuxFilesystemWrapper.hasParentDirectoryProperty();
-	private static Resource filename = LinuxFilesystemWrapper.filenameResource();
-	private static Property hasFilename = LinuxFilesystemWrapper.hasFilenameProperty();
-	private static Resource path = LinuxFilesystemWrapper.pathResource();
-
-	//StringContent dependencies
-	private static Resource content = StringContentWrapper.contentResource();
-	private static Property hasContent = StringContentWrapper.hasContentResource();
-
 	public static DataModel appendParentDirectory(Collection<Resource> resources, Model metaData, HashMap<AnonId, Object> data) {
 
 		Model newMetaData = ModelFactory.createDefaultModel();
@@ -46,25 +35,25 @@ public class NodeAppender {
 
 			//First determine what the parent path is.
 
-			Resource nodePath = nextNode.getProperty(hasPath).getObject().asResource();
+			Resource nodePath = nextNode.getProperty(LinuxFilesystemWrapper.hasPath).getObject().asResource();
 			String pathString = (String) data.get(nodePath.getId());
 
 			String parentPath = pathString.substring(0, StringUtils.lastIndexOf(pathString, "/"));
 			String parentFilename = pathString.substring(StringUtils.lastIndexOf(pathString, "/"));
 
-			Resource parentNode = newMetaData.createResource(node);
+			Resource parentNode = newMetaData.createResource(LinuxFilesystemWrapper.node);
 
 			//Append data about the file's parent directory.
-			newMetaData.add(nextNode, hasParentDirectory, parentNode);
+			newMetaData.add(nextNode, LinuxFilesystemWrapper.hasParentDirectory, parentNode);
 
 			//Append datum about the parent directory's name
-			Resource parentNodeFilename = newMetaData.createResource(filename);
-			newMetaData.add(parentNode, hasFilename, parentNodeFilename);
+			Resource parentNodeFilename = newMetaData.createResource(LinuxFilesystemWrapper.filename);
+			newMetaData.add(parentNode, LinuxFilesystemWrapper.hasFilename, parentNodeFilename);
 			newData.put(parentNodeFilename.getId(), parentFilename);
 
 			//Append datum about the parent directory's path
-			Resource parentNodePath = newMetaData.createResource(path);
-			newMetaData.add(parentNode, hasPath, parentNodePath);
+			Resource parentNodePath = newMetaData.createResource(LinuxFilesystemWrapper.path);
+			newMetaData.add(parentNode, LinuxFilesystemWrapper.hasPath, parentNodePath);
 			newData.put(parentNodePath.getId(), parentPath);
 
 		}
@@ -82,7 +71,7 @@ public class NodeAppender {
 		while (it.hasNext()) {
 			Resource nextNode = it.next();
 			
-			Resource nodePath = nextNode.getProperty(hasPath).getObject().asResource();
+			Resource nodePath = nextNode.getProperty(LinuxFilesystemWrapper.hasPath).getObject().asResource();
 			
 			//First get the path
 			String pathString = (String) data.get(nodePath.getId());
@@ -105,8 +94,8 @@ public class NodeAppender {
 			}
 
 			//Now append a resource representing the content
-			Resource newContentResource = newMetaData.createResource(content);
-			metaData.add(nextNode, hasContent, newContentResource);
+			Resource newContentResource = newMetaData.createResource(StringContentWrapper.content);
+			metaData.add(nextNode, StringContentWrapper.hasContent, newContentResource);
 			newData.put(newContentResource.getId(), contentString);
 		}
 
