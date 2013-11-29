@@ -10,23 +10,23 @@ import java.util.Iterator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import rdf.serializer.DataModel;
+import rdf.serializer.URIFactory;
 import string.content.StringContentWrapper;
 
 public class NodeAppender {
+	
+	private static URIFactory URIGenerator = URIFactory.getInstance();
 
-	public static DataModel appendParentDirectory(Collection<Resource> resources, Model metaData, HashMap<AnonId, Object> data) {
+	public static DataModel appendParentDirectory(Collection<Resource> resources, Model metaData, HashMap<String, Object> data) {
 
 		Model newMetaData = ModelFactory.createDefaultModel();
-		HashMap<AnonId, Object> newData = new HashMap<AnonId, Object>();
+		HashMap<String, Object> newData = new HashMap<String, Object>();
 
 		Iterator<Resource> it = resources.iterator();
 
@@ -36,35 +36,35 @@ public class NodeAppender {
 			//First determine what the parent path is.
 
 			Resource nodePath = nextNode.getProperty(LinuxFilesystemWrapper.hasPath).getObject().asResource();
-			String pathString = (String) data.get(nodePath.getId());
+			String pathString = (String) data.get(nodePath.getURI());
 
 			String parentPath = pathString.substring(0, StringUtils.lastIndexOf(pathString, "/"));
 			String parentFilename = pathString.substring(StringUtils.lastIndexOf(pathString, "/"));
 
-			Resource parentNode = newMetaData.createResource(LinuxFilesystemWrapper.node);
+			Resource parentNode = newMetaData.createResource(URIGenerator.generateURI(), LinuxFilesystemWrapper.node);
 
 			//Append data about the file's parent directory.
 			newMetaData.add(nextNode, LinuxFilesystemWrapper.hasParentDirectory, parentNode);
 
 			//Append datum about the parent directory's name
-			Resource parentNodeFilename = newMetaData.createResource(LinuxFilesystemWrapper.filename);
+			Resource parentNodeFilename = newMetaData.createResource(URIGenerator.generateURI(), LinuxFilesystemWrapper.filename);
 			newMetaData.add(parentNode, LinuxFilesystemWrapper.hasFilename, parentNodeFilename);
-			newData.put(parentNodeFilename.getId(), parentFilename);
+			newData.put(parentNodeFilename.getURI(), parentFilename);
 
 			//Append datum about the parent directory's path
-			Resource parentNodePath = newMetaData.createResource(LinuxFilesystemWrapper.path);
+			Resource parentNodePath = newMetaData.createResource(URIGenerator.generateURI(), LinuxFilesystemWrapper.path);
 			newMetaData.add(parentNode, LinuxFilesystemWrapper.hasPath, parentNodePath);
-			newData.put(parentNodePath.getId(), parentPath);
+			newData.put(parentNodePath.getURI(), parentPath);
 
 		}
 
 		return new DataModel(newMetaData, newData);
 	}
 
-	public static DataModel appendStringContent(Collection<Resource> resources, Model metaData, HashMap<AnonId, Object> data) throws IOException {
+	public static DataModel appendStringContent(Collection<Resource> resources, Model metaData, HashMap<String, Object> data) throws IOException {
 
 		Model newMetaData = ModelFactory.createDefaultModel();
-		HashMap<AnonId, Object> newData = new HashMap<AnonId, Object>();
+		HashMap<String, Object> newData = new HashMap<String, Object>();
 		
 		Iterator<Resource> it = resources.iterator();
 		
@@ -94,9 +94,9 @@ public class NodeAppender {
 			}
 
 			//Now append a resource representing the content
-			Resource newContentResource = newMetaData.createResource(StringContentWrapper.content);
+			Resource newContentResource = newMetaData.createResource(URIGenerator.generateURI(), StringContentWrapper.content);
 			metaData.add(nextNode, StringContentWrapper.hasContent, newContentResource);
-			newData.put(newContentResource.getId(), contentString);
+			newData.put(newContentResource.getURI(), contentString);
 		}
 
 		return new DataModel(newMetaData, newData);

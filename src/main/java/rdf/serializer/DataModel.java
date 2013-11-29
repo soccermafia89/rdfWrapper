@@ -2,30 +2,29 @@ package rdf.serializer;
 
 import java.util.HashMap;
 
-import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class DataModel {
 	private Model metaData;
-	private HashMap<AnonId, Object> data;
+	private HashMap<String, Object> data;
 	
 	public DataModel() {
 		metaData = ModelFactory.createDefaultModel();
-		data = new HashMap<AnonId, Object>();
+		data = new HashMap<String, Object>();
 	}
 	
 	public DataModel(Model myMetaData) {
 		metaData = myMetaData;
-		data = new HashMap<AnonId, Object>();		
+		data = new HashMap<String, Object>();		
 	}
 	
-	public DataModel(HashMap<AnonId, Object> myData) {
+	public DataModel(HashMap<String, Object> myData) {
 		metaData = ModelFactory.createDefaultModel();
 		data = myData;
 	}
 	
-	public DataModel(Model myMetaData, HashMap<AnonId, Object> myData) {
+	public DataModel(Model myMetaData, HashMap<String, Object> myData) {
 		metaData = myMetaData;
 		data = myData;
 	}
@@ -38,11 +37,11 @@ public class DataModel {
 		this.metaData = metaData;
 	}
 
-	public HashMap<AnonId, Object> getData() {
+	public HashMap<String, Object> getData() {
 		return data;
 	}
 
-	public void setData(HashMap<AnonId, Object> data) {
+	public void setData(HashMap<String, Object> data) {
 		this.data = data;
 	}
 }

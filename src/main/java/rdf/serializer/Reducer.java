@@ -2,9 +2,7 @@ package rdf.serializer;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -22,13 +20,13 @@ import com.hp.hpl.jena.vocabulary.OWL;
  *
  */
 public class Reducer {
-	public static DataModel reduce(Model metaData, HashMap<AnonId, Object> data) {
+	public static DataModel reduce(Model metaData, HashMap<String, Object> data) {
 		Model reducedModel = ModelFactory.createUnion(metaData, ModelFactory.createDefaultModel());
-		HashMap<AnonId, Object> reducedData = new HashMap<AnonId, Object>();
+		HashMap<String, Object> reducedData = new HashMap<String, Object>();
 		reducedData.putAll(data);
 		
 		StmtIterator it = reducedModel.listStatements((Resource) null, OWL.sameAs, (Resource) null);
-		HashSet<AnonId> ids = new HashSet<AnonId>();
+		HashSet<String> ids = new HashSet<String>();
 		
 		while(it.hasNext()) {
 			Statement statement = it.nextStatement();
@@ -36,14 +34,14 @@ public class Reducer {
 			Resource subject = statement.getSubject();
 			Resource object = statement.getObject().asResource();
 			
-			if(!ids.contains(subject.getId()) && !ids.contains(object.getId())) {
-				ids.add(subject.getId());
+			if(!ids.contains(subject.getURI()) && !ids.contains(object.getURI())) {
+				ids.add(subject.getURI());
 			}
 			
-			if(!ids.contains(subject.getId())) {
+			if(!ids.contains(subject.getURI())) {
 				//We have the object ID in our set.
 				Reducer.replace(subject, object, reducedModel, reducedData);
-			} else if(!ids.contains(object.getId())) {
+			} else if(!ids.contains(object.getURI())) {
 				//We have the subject ID in our set.
 				Reducer.replace(object, subject, reducedModel, reducedData);
 			}
@@ -57,7 +55,7 @@ public class Reducer {
 	}
 	
 	//Replaces subject and object nodes in statements from source to target.
-	private static void replace(Resource source, Resource target, Model model, HashMap<AnonId, Object> data) {
+	private static void replace(Resource source, Resource target, Model model, HashMap<String, Object> data) {
 		StmtIterator subIt = model.listStatements(source, (Property) null, (Resource) null);
 		int count = 0;
 		while(subIt.hasNext()) {
@@ -77,14 +75,14 @@ public class Reducer {
 			Property predicate = subStatement.getPredicate();
 			Resource object = subStatement.getObject().asResource();
 			
-			System.out.println("Replacing: " + data.get(subject.getId()) + " " + predicate.getLocalName() + " " + data.get(object.getId()));
-			System.out.println("With: " + data.get(target.getId()) + " " + predicate.getLocalName() + " " + data.get(object.getId()));
+			System.out.println("Replacing: " + data.get(subject.getURI()) + " " + predicate.getLocalName() + " " + data.get(object.getURI()));
+			System.out.println("With: " + data.get(target.getURI()) + " " + predicate.getLocalName() + " " + data.get(object.getURI()));
 
 			//Replace metadata
 			subStatement.remove();
 			model.add(subject, predicate, object);
 			//Remove duplicate data
-			data.remove(subStatement.getSubject().asResource().getId());
+			data.remove(subStatement.getSubject().asResource().getURI());
 		}
 		
 		StmtIterator objIt = model.listStatements((Resource) null, (Property) null, source);
@@ -106,14 +104,14 @@ public class Reducer {
 			Property predicate = objStatement.getPredicate();
 			Resource object = target;
 			
-			System.out.println("Replacing: " + data.get(subject.getId()) + " " + predicate.getLocalName() + " " + data.get(object.getId()));
-			System.out.println("With: " + data.get(subject.getId()) + " " + predicate.getLocalName() + " " + data.get(target.getId()));
+			System.out.println("Replacing: " + data.get(subject.getURI()) + " " + predicate.getLocalName() + " " + data.get(object.getURI()));
+			System.out.println("With: " + data.get(subject.getURI()) + " " + predicate.getLocalName() + " " + data.get(target.getURI()));
 			
 			//Replace metadata
 			objStatement.remove();
 			model.add(subject, predicate, object);
 			//Remove duplicate data
-			data.remove(objStatement.getObject().asResource().getId());
+			data.remove(objStatement.getObject().asResource().getURI());
 		}
 	}
 }

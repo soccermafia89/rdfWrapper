@@ -26,6 +26,6 @@ public final class URIFactory {
     
     public String generateURI() {
     	count++;
-    	return "ID_" + count;
+    	return "http://ethier.alex.com/URIFactory/simple#" + count;
     }
 }

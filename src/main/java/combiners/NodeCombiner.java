@@ -6,7 +6,6 @@ import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 import linux.filesystem.LinuxFilesystemWrapper;
 
-import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -20,7 +19,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class NodeCombiner {
 	
 
-	public static Model linkNodes(Model metaData, Model newMetaData, HashMap<AnonId, Object> data, HashMap<AnonId, Object> newData) {
+	public static Model linkNodes(Model metaData, Model newMetaData, HashMap<String, Object> data, HashMap<String, Object> newData) {
 		Model linkedMetadata = ModelFactory.createDefaultModel();
 		Reasoner reasoner = PelletReasonerFactory.theInstance().create();
 
@@ -37,7 +36,7 @@ public class NodeCombiner {
 			Resource nextNode = stmt.getSubject();
 			Resource nodePath = nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 
-			String newPath = (String) newData.get(nodePath.getId());
+			String newPath = (String) newData.get(nodePath.getURI());
 			oldSet.put(newPath, nextNode);
 		}
 
@@ -51,7 +50,7 @@ public class NodeCombiner {
 			Resource nextNode = stmt.getSubject();
 			Resource nodePath = nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 
-			String newPath = (String) newData.get(nodePath.getId());
+			String newPath = (String) newData.get(nodePath.getURI());
 			
 			//If there is a match.
 			if(oldSet.containsKey(newPath)) {
