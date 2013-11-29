@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://ethier.alex.com/StringContent#"
+     xml:base="http://ethier.alex.com/StringContent"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://ethier.alex.com/StringContent">
+        <owl:imports rdf:resource="http://ethier.alex.com/RDFSerializable"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasCharacter -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasCharacter"/>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasContent -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasContent"/>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasContentOffset -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasContentOffset"/>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasLine -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasLine"/>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasLineOffset -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasLineOffset"/>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasPhrase -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasPhrase"/>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasSource -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasSource"/>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasWord -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasWord">
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#hasWordOffset -->
+
+    <owl:ObjectProperty rdf:about="http://ethier.alex.com/StringContent#hasWordOffset"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#Character -->
+
+    <owl:Class rdf:about="http://ethier.alex.com/StringContent#Character">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ethier.alex.com/StringContent#hasCharacter"/>
+                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://ethier.alex.com/RDFSerializable#MappedResource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#Content -->
+
+    <owl:Class rdf:about="http://ethier.alex.com/StringContent#Content">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ethier.alex.com/StringContent#hasContent"/>
+                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://ethier.alex.com/RDFSerializable#MappedResource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#Line -->
+
+    <owl:Class rdf:about="http://ethier.alex.com/StringContent#Line">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ethier.alex.com/StringContent#hasLine"/>
+                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://ethier.alex.com/RDFSerializable#MappedResource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#Phrase -->
+
+    <owl:Class rdf:about="http://ethier.alex.com/StringContent#Phrase">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ethier.alex.com/StringContent#hasPhrase"/>
+                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://ethier.alex.com/RDFSerializable#MappedResource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ethier.alex.com/StringContent#Word -->
+
+    <owl:Class rdf:about="http://ethier.alex.com/StringContent#Word">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ethier.alex.com/StringContent#hasWord"/>
+                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://ethier.alex.com/RDFSerializable#MappedResource"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+
