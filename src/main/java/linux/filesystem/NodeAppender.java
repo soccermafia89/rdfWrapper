@@ -39,7 +39,12 @@ public class NodeAppender {
 			String pathString = (String) data.get(nodePath.getURI());
 
 			String parentPath = pathString.substring(0, StringUtils.lastIndexOf(pathString, "/"));
-			String parentFilename = pathString.substring(StringUtils.lastIndexOf(pathString, "/"));
+			String parentFilename = parentPath.substring(StringUtils.lastIndexOf(parentPath, "/") + 1);
+			
+//			System.out.println("");
+//			System.out.println("Child Path: " + pathString);
+//			System.out.println("Parent Path: " + parentPath);
+//			System.out.println("Parent Filename: " + parentFilename);
 
 			Resource parentNode = newMetaData.createResource(URIGenerator.generateURI(), LinuxFilesystemWrapper.node);
 

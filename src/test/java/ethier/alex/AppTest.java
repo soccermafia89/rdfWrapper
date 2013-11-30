@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 import rdf.serializer.DataModel;
+import rdf.serializer.RDFSerializerWrapper;
 import rdf.serializer.Reducer;
 import rdf.serializer.URIFactory;
 
@@ -20,6 +21,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 import combiners.NodeCombiner;
@@ -114,6 +116,46 @@ public class AppTest
 		}
 	}
 
+	public void testReducing() {
+		System.out.println("");
+		System.out.println("");
+		System.out.println("********************************************");
+		System.out.println("******       Testing Reducer         ******");
+		System.out.println("********************************************");
+		System.out.println("");
+		System.out.println("");
+
+		Model metaData = ModelFactory.createDefaultModel();
+		HashMap<String, Object> data = new HashMap<String, Object>();
+
+		Resource baseA = metaData.createResource(URIgenerator.generateURI(), LinuxFilesystemWrapper.node);
+		Resource copy1A = metaData.createResource(URIgenerator.generateURI(), LinuxFilesystemWrapper.node);
+		Resource copy2A = metaData.createResource(URIgenerator.generateURI(), LinuxFilesystemWrapper.node);
+		Resource copy3A = metaData.createResource(URIgenerator.generateURI(), LinuxFilesystemWrapper.node);
+
+		Resource baseB = metaData.createResource(URIgenerator.generateURI(), LinuxFilesystemWrapper.path);
+		Resource copy1B = metaData.createResource(URIgenerator.generateURI(), LinuxFilesystemWrapper.path);
+		Resource copy2B = metaData.createResource(URIgenerator.generateURI(), LinuxFilesystemWrapper.path);
+
+		metaData.add(baseA, LinuxFilesystemWrapper.hasPath, baseB);
+
+		metaData.add(copy1A, RDFSerializerWrapper.isLinkedWith, baseA);
+		metaData.add(copy2A, RDFSerializerWrapper.isLinkedWith, baseA);
+		metaData.add(copy3A, RDFSerializerWrapper.isLinkedWith, copy2A);
+
+		metaData.add(copy1B, RDFSerializerWrapper.isLinkedWith, baseB);
+		metaData.add(baseB, RDFSerializerWrapper.isLinkedWith, copy2B);
+
+		System.out.println("Before: ");
+		metaData.write(System.out);
+		
+		
+		DataModel dataModel = Reducer.reduce(metaData, data);
+		metaData = dataModel.getMetaData();
+		System.out.println("After: ");
+		metaData.write(System.out);
+	}
+
 	//	public void testSubClassInferenc() throws Exception
 	//	{
 	//		System.out.println("");
@@ -156,7 +198,7 @@ public class AppTest
 
 			HashMap<String, Object> data = new HashMap<String, Object>();
 
-			String pathString = "/home/alex/";
+			String pathString = "/home/alex";
 
 			if (pathString.endsWith("/")) {
 				pathString = pathString.substring(0, pathString.length() - 1);
@@ -207,6 +249,8 @@ public class AppTest
 			System.out.println("");
 
 			DataModel parentDirectoryDataModel = NodeAppender.appendParentDirectory(nodes, metaData, data);
+//			System.exit(0);
+			
 			Model parentDirectoryMetaData = parentDirectoryDataModel.getMetaData();
 			HashMap<String, Object> parentDirectoryData = parentDirectoryDataModel.getData();
 

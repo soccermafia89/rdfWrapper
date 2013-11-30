@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
+import rdf.serializer.RDFSerializerWrapper;
 import linux.filesystem.LinuxFilesystemWrapper;
 
 import com.hp.hpl.jena.rdf.model.InfModel;
@@ -21,9 +22,8 @@ public class NodeCombiner {
 
 	public static Model linkNodes(Model metaData, Model newMetaData, HashMap<String, Object> data, HashMap<String, Object> newData) {
 		Model linkedMetadata = ModelFactory.createDefaultModel();
-		Reasoner reasoner = PelletReasonerFactory.theInstance().create();
 
-		//Create a map (URI data key -> unique identified resource)
+		Reasoner reasoner = PelletReasonerFactory.theInstance().create();
 		InfModel oldInf = ModelFactory.createInfModel(reasoner, metaData);
 
 		HashMap<String, Resource> oldSet = new HashMap<String, Resource>();
@@ -36,8 +36,8 @@ public class NodeCombiner {
 			Resource nextNode = stmt.getSubject();
 			Resource nodePath = nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 
-			String newPath = (String) newData.get(nodePath.getURI());
-			oldSet.put(newPath, nextNode);
+			String oldPath = (String) data.get(nodePath.getURI());
+			oldSet.put(oldPath, nextNode);
 		}
 
 		InfModel newInf = ModelFactory.createInfModel(reasoner, newMetaData);
@@ -56,11 +56,12 @@ public class NodeCombiner {
 			if(oldSet.containsKey(newPath)) {
 				Resource oldNode = oldSet.get(newPath);
 				
-//				System.out.println("Linking Nodes: " + 
-//				data.get(nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPathProperty()).getId())
-//				+ " = " +
-//				data.get(oldNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPathProperty()).getId())
-//						);
+				System.out.println("");
+				System.out.println("Linking Nodes: " + 
+				data.get(nextNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath).getURI())
+				+ " = " +
+				data.get(oldNode.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath).getURI())
+						);
 				
 				linkedMetadata.add(linkNodeResources(nextNode, oldNode));
 				
@@ -70,7 +71,7 @@ public class NodeCombiner {
 			}
 			
 			//Also remember to add newly processed nodes to the oldSet
-			//This has to occur after the sameAs property is added to the linkedMetadata.
+			//This has to occur after the isLinkedWithProperty property is added to the linkedMetadata.
 			oldSet.put(newPath, nextNode);
 		}
 
@@ -81,34 +82,47 @@ public class NodeCombiner {
 		
 		Model model = ModelFactory.createDefaultModel();
 		
-		model.add(node1, OWL.sameAs, node2);
+		System.out.println("Linking Nodes: " + node1.getURI() + "=" + node2.getURI());
+		model.add(node1, RDFSerializerWrapper.isLinkedWith, node2);
 		
 		//Mark filenames as equal.
 		Resource filename1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasFilename);
 		Resource filename2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasFilename);
 		if(filename1 != null && filename2 != null) {
-			model.add(filename1, OWL.sameAs, filename2);
+			System.out.println("Linking filenames: " + filename1.getURI() + "=" + filename2.getURI());
+			model.add(filename1, RDFSerializerWrapper.isLinkedWith, filename2);
+		} else {
+			System.out.println("NULL FOUND!");
 		}
 		
 		//Mark content as equal.
 		Resource content1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasContent);
 		Resource content2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasContent);
 		if(content1 != null && content2 != null) {
-			model.add(content1, OWL.sameAs, content2);
+			System.out.println("Linking content: " + content1.getURI() + "=" + content2.getURI());
+			model.add(content1, RDFSerializerWrapper.isLinkedWith, content2);
+		} else {
+			System.out.println("NULL FOUND!");
 		}
 		
 		//Mark path as equal.
 		Resource path1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 		Resource path2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasPath);
 		if(path1 != null && path2 != null) {
-			model.add(path1, OWL.sameAs, path2);
+			System.out.println("Linking paths: " + path1.getURI() + "=" + path2.getURI());
+			model.add(path1, RDFSerializerWrapper.isLinkedWith, path2);
+		} else {
+			System.out.println("NULL FOUND!");
 		}
 		
 		//Mark parent directory as equal.
 		Resource parentDirectory1 = node1.getPropertyResourceValue(LinuxFilesystemWrapper.hasParentDirectory);
 		Resource parentDirectory2 = node2.getPropertyResourceValue(LinuxFilesystemWrapper.hasParentDirectory);
 		if(parentDirectory1 != null && parentDirectory2 != null) {
-			model.add(parentDirectory1, OWL.sameAs, parentDirectory2);
+			System.out.println("Linking parent directory: " + parentDirectory1.getURI() + "=" + parentDirectory2.getURI());
+			model.add(parentDirectory1, RDFSerializerWrapper.isLinkedWith, parentDirectory2);
+		} else {
+			System.out.println("NULL FOUND!");
 		}
 		
 		return model;
