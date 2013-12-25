@@ -1,1 +1,3 @@
-target/
+/core/.settings/
+/common/target/
+/script/target/
