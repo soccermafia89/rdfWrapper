@@ -4,9 +4,9 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.HashMap;
-import linux.filesystem.LinuxFilesystemWrapper;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 import rdf.serializer.RDFSerializerWrapper;
+import wrappers.LinuxFilesystemWrapper;
 
 public class NodeCombiner {
 	
