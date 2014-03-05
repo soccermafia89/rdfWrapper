@@ -96,7 +96,17 @@ public class AppTest
         grandfather.addObject(isFather, father);
         father.addObject(isFather, son);
         
-        MappedGenieInstance derivedSon = (MappedGenieInstance) grandfather.getObject(isFather).getObject(isFather).asMappedInstance();
-        assertTrue(derivedSon.getPojo().equals(son));
+        String testInheritance = "test";
+        BlankGenieInstance test = genieModel.createMappedInstance(testInheritance);
+        MappedGenieInstance test2 = (MappedGenieInstance) test;
+        
+        BlankGenieInstance derivedSon = grandfather.getObject(isFather).getObject(isFather);
+        assertTrue(son.getUri().equals(derivedSon.getUri()));
+        System.out.println("Son URI: " + son.getUri());
+        
+        //The reaason this fails is because we create a new BlankGenieInstance internally.
+        //To fix this we need to serialize and add the pojo into the Jena model and then
+        //when we call get instance we should create the mapped resource from the model.
+        MappedGenieInstance sonDerived2 = (MappedGenieInstance) derivedSon;
     }
 }
