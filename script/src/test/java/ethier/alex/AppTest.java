@@ -62,7 +62,7 @@ public class AppTest
         try {
 
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("ExampleProb.owl");
-
+            
             Model model = ModelFactory.createDefaultModel();
             model.read(inputStream, null, "RDF/XML");
 
