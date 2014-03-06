@@ -8,7 +8,7 @@ package ethier.alex.genie.exception;
 
  @author alex
  */
-public class OverwriteException extends Exception {
+public class OverwriteException extends RuntimeException {
     
     public OverwriteException(String message) {
         super(message);

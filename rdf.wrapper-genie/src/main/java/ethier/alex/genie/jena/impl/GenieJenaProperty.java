@@ -2,23 +2,24 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ethier.alex.genie.data;
+package ethier.alex.genie.jena.impl;
 
 import com.hp.hpl.jena.rdf.model.Property;
+import ethier.alex.genie.data.interfaces.GenieProperty;
 
 /**
 
  @author alex
  */
-public class GenieProperty {
+public class GenieJenaProperty implements GenieProperty {
     
     private Property property;
     
-    GenieProperty(Property myProperty) {
+    GenieJenaProperty(Property myProperty) {
         property = myProperty;
     }
     
-    Property getProperty() {
+    protected Property getProperty() {
         return property;
     }
     

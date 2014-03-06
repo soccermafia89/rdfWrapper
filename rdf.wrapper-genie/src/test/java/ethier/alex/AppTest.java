@@ -1,10 +1,15 @@
 package ethier.alex;
 
+import ethier.alex.genie.jena.impl.GenieJenaProperty;
+import ethier.alex.genie.jena.impl.UniqueGenieJenaProperty;
+import ethier.alex.genie.jena.impl.MappedJenaInstance;
+import ethier.alex.genie.jena.impl.GenieJenaModel;
+import ethier.alex.genie.jena.impl.EmptyJenaInstance;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import ethier.alex.genie.data.GenieModel;
-import ethier.alex.genie.data.BlankGenieInstance;
-import ethier.alex.genie.data.GenieProperty;
-import ethier.alex.genie.data.MappedGenieInstance;
+import ethier.alex.genie.data.interfaces.EmptyInstance;
+import ethier.alex.genie.data.interfaces.MappedInstance;
+import ethier.alex.genie.exception.OverwriteException;
+import java.util.Collection;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -44,15 +49,15 @@ public class AppTest
     public void testBasics() {
         System.out.println("Testing basics.");
         
-        GenieModel genieModel = new GenieModel();
+        GenieJenaModel genieModel = new GenieJenaModel();
         
-        GenieProperty isFather = genieModel.createProperty("isFather");
-        GenieProperty isSibling = genieModel.createProperty("isSibling");
-        GenieProperty hasUncle = genieModel.createProperty("hasUncle");
-        BlankGenieInstance grandFather = genieModel.createBlankInstance();
-        BlankGenieInstance father = genieModel.createBlankInstance();
-        BlankGenieInstance uncle = genieModel.createBlankInstance();
-        BlankGenieInstance son = genieModel.createBlankInstance();
+        UniqueGenieJenaProperty isFather = (UniqueGenieJenaProperty) genieModel.createUniqueProperty("isFather");
+        UniqueGenieJenaProperty isSibling = (UniqueGenieJenaProperty) genieModel.createUniqueProperty("isSibling");
+        UniqueGenieJenaProperty hasUncle = (UniqueGenieJenaProperty) genieModel.createUniqueProperty("hasUncle");
+        EmptyInstance grandFather = genieModel.createEmptyInstance();
+        EmptyInstance father = genieModel.createEmptyInstance();
+        EmptyInstance uncle = genieModel.createEmptyInstance();
+        EmptyInstance son = genieModel.createEmptyInstance();
         
         //        System.out.println("Uncle uri: " + uncle.getUri());
         
@@ -61,52 +66,77 @@ public class AppTest
         father.addObject(isSibling, father);
         son.addObject(hasUncle, uncle);
         
-        BlankGenieInstance derivedUncle = grandFather.getObject(isFather).getObject(isFather).getObject(hasUncle);
+        EmptyInstance derivedUncle = grandFather.getObject(isFather).getObject(isFather).getObject(hasUncle);
 //        System.out.println("Derived uncle uri: " + derivedUncle.getUri());
         
         //Test that graph traversal works.
-        assertTrue(uncle.getUri().equals(derivedUncle.getUri()));
+        assertTrue(((EmptyJenaInstance)uncle).getUri().equals(((EmptyJenaInstance)derivedUncle).getUri()));
         
-        BlankGenieInstance cousin = genieModel.createBlankInstance();
+        EmptyInstance cousin = genieModel.createEmptyInstance();
         uncle.addObject(isFather, cousin);
         
         //Test that getting the same object twice does not create cloned copies.
-        BlankGenieInstance derivedUncle2 = grandFather.getObject(isFather).getObject(isFather).getObject(hasUncle);
-        assertTrue(derivedUncle.getUri().equals(derivedUncle2.getUri()));
+        EmptyInstance derivedUncle2 = grandFather.getObject(isFather).getObject(isFather).getObject(hasUncle);
+        assertTrue(((EmptyJenaInstance)derivedUncle).getUri().equals(((EmptyJenaInstance)derivedUncle2).getUri()));
         
         //Test that modification of graph retains synchronization of objects.
-        BlankGenieInstance derivedCousin = derivedUncle.getObject(isFather);
-        assertTrue(derivedCousin.getUri().equals(cousin.getUri()));
+        EmptyInstance derivedCousin = derivedUncle.getObject(isFather);
+        assertTrue(((EmptyJenaInstance)derivedCousin).getUri().equals(((EmptyJenaInstance)cousin).getUri()));
+    }
+    
+    public void testMultipleBasic() {
+        System.out.println("Testing multiple basics.");
+        
+        //Test having multiple object links with the same property.
+        GenieJenaModel genieModel = new GenieJenaModel();
+        
+        GenieJenaProperty hasChild = (GenieJenaProperty) genieModel.createProperty("hasChild");
+        EmptyInstance parent = genieModel.createEmptyInstance();
+        
+        EmptyInstance child1 = genieModel.createEmptyInstance();
+        EmptyInstance child2 = genieModel.createEmptyInstance();
+        EmptyInstance child3 = genieModel.createEmptyInstance();
+        
+        parent.addObject(hasChild, child1);
+        parent.addObject(hasChild, child2);
+        parent.addObject(hasChild, child3);
+        
+        Collection<EmptyInstance> children = parent.getObjects(hasChild);
+        assertTrue(children.size() == 3);
+        
+        //Ensure that unique properties remain unique
+        EmptyInstance guest = genieModel.createEmptyInstance();
+        
+        UniqueGenieJenaProperty hasFather = (UniqueGenieJenaProperty) genieModel.createUniqueProperty("hasFather");
+        child1.addObject(hasFather, parent);
+        child2.addObject(hasFather, parent);
+        try {
+            child1.addObject(hasFather, guest);
+            assertTrue( false );//An exception should prevent code from reaching here.
+        } catch (OverwriteException e) {
+            assertTrue( true );//Exception was properly thrown.
+        }
     }
     
     public void testPojo() {
+        System.out.println("Testing pojo conversion.");
         
-        GenieModel genieModel = new GenieModel();
+        GenieJenaModel genieModel = new GenieJenaModel();
         
         String grandfatherString = "grandfather";
-//        String fatherString = "father";
+        String fatherString = "father";
         String sonString = "son";
         
-        MappedGenieInstance grandfather = genieModel.createMappedInstance(grandfatherString);
-        BlankGenieInstance father = genieModel.createBlankInstance();
-        MappedGenieInstance son = genieModel.createMappedInstance(sonString);
+        MappedInstance grandfather = genieModel.createMappedInstance(grandfatherString);
+        EmptyInstance father = genieModel.createEmptyInstance();
+        MappedInstance son = genieModel.createMappedInstance(sonString);
         
-        GenieProperty isFather = genieModel.createProperty("isFather");
+        UniqueGenieJenaProperty isFather = (UniqueGenieJenaProperty) genieModel.createUniqueProperty("isFather");
         
         grandfather.addObject(isFather, father);
         father.addObject(isFather, son);
         
-        String testInheritance = "test";
-        BlankGenieInstance test = genieModel.createMappedInstance(testInheritance);
-        MappedGenieInstance test2 = (MappedGenieInstance) test;
-        
-        BlankGenieInstance derivedSon = grandfather.getObject(isFather).getObject(isFather);
-        assertTrue(son.getUri().equals(derivedSon.getUri()));
-        System.out.println("Son URI: " + son.getUri());
-        
-        //The reaason this fails is because we create a new BlankGenieInstance internally.
-        //To fix this we need to serialize and add the pojo into the Jena model and then
-        //when we call get instance we should create the mapped resource from the model.
-        MappedGenieInstance sonDerived2 = (MappedGenieInstance) derivedSon;
+        EmptyInstance derivedSon = grandfather.getObject(isFather).getObject(isFather);
+        assertTrue(((MappedJenaInstance)son).getUri().equals(((MappedJenaInstance)derivedSon).getUri()));
     }
 }
