@@ -12,8 +12,8 @@
         <module>rdf.wrapper-core</module>
         <module>rdf.wrapper-common</module>
         <module>rdf.wrapper-script</module>
-    <module>rdf.wrapper-genie</module>
-  </modules>
+        <module>rdf.wrapper-genie</module>
+    </modules>
 
     <build>
         <pluginManagement>

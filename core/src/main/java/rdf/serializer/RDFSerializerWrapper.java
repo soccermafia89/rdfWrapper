@@ -33,8 +33,15 @@ public class RDFSerializerWrapper {
 		return ResourceFactory.createProperty(uri, local);
 	}
 
+        //A hash uniquely identifies a node in a graph.
+        public static final Resource hash = resource("hash");
+        
+        // If one resouce is linked with another, they are the same resource and the two nodes need to be joined into one.
 	public static final Property isLinkedWith = property("isLinkedWith");
-
+        
+        //Used to link any node with a resource of type hash.
+        public static final Property hasHash = property("hasHash");
+        
 	//Ontology Relationships
 	public static final Model model = getModel();
 
